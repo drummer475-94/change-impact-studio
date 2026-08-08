@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#15231b">
+    <meta name="description" content="A static IT change planning workspace for dependency conflicts, risk analysis, readiness, and runbook export.">
+    <title>Change Impact Studio | IT Change Planning</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#mainContent">Skip to change plan</a>
+    <header class="topbar" id="top">
+      <a href="#top" class="brand"><span aria-hidden="true">C/I</span><span><strong>Change Impact Studio</strong><small>Plan the change. Protect the service.</small></span></a>
+      <nav aria-label="Page actions"><button class="plain-button" id="importButton" type="button">Import plan</button><input id="fileInput" type="file" accept=".json,application/json" aria-label="Import change plan JSON" hidden><button class="plain-button" id="exportPlanButton" type="button">Export plan</button><button class="solid-button" id="addChangeButton" type="button">New change</button></nav>
+    </header>
+
+    <main id="mainContent">
+      <section class="hero" aria-labelledby="pageTitle">
+        <div>
+          <p class="overline">Operations planning / Week 33</p>
+          <h1 id="pageTitle">See the impact before the window opens.</h1>
+        </div>
+        <div class="hero-note"><span aria-hidden="true">↳</span><p>Map dependencies, find scheduling collisions, test rollback readiness, and hand the operator a usable runbook.</p><small id="loadStatus" role="status" aria-live="polite">Sample change plan loaded.</small></div>
+      </section>
+
+      <section class="metric-strip" aria-label="Change plan summary">
+        <article><span>Scheduled</span><strong id="changeMetric">0</strong><small>changes in scope</small></article>
+        <article class="attention"><span>Collisions</span><strong id="collisionMetric">0</strong><small>shared dependencies</small></article>
+        <article><span>High risk</span><strong id="riskMetric">0</strong><small>score 12 or above</small></article>
+        <article><span>Ready</span><strong id="readyMetric">0</strong><small>no blockers + preflight done</small></article>
+      </section>
+
+      <section class="schedule-section" aria-labelledby="scheduleTitle">
+        <div class="section-heading"><div><p class="overline">Change calendar</p><h2 id="scheduleTitle">Implementation windows</h2></div><div class="schedule-key"><span><i class="low"></i> Low / medium</span><span><i class="high"></i> High</span><span><i class="critical"></i> Critical</span></div></div>
+        <div class="schedule-wrap"><div class="schedule-board" id="scheduleBoard"></div></div>
+      </section>
+
+      <div class="analysis-grid">
+        <section class="issue-panel" aria-labelledby="issuesTitle">
+          <div class="section-heading inset"><div><p class="overline">Automated analysis</p><h2 id="issuesTitle">Plan issues</h2></div><span class="count" id="issueCount">0</span></div>
+          <div class="issue-list" id="issueList"></div>
+        </section>
+
+        <section class="detail-panel" aria-labelledby="detailTitle">
+          <div class="detail-empty" id="detailEmpty">Select a change from the calendar or issue list to inspect its readiness.</div>
+          <div id="detailContent" hidden>
+            <div class="detail-header"><div><p class="overline" id="detailId"></p><h2 id="detailTitle"></h2><p id="detailService"></p></div><div class="risk-stamp"><span>Risk</span><strong id="detailRisk"></strong><small id="detailRiskBand"></small></div></div>
+            <dl class="change-facts"><div><dt>Window</dt><dd id="detailWindow"></dd></div><div><dt>Owner</dt><dd id="detailOwner"></dd></div><div><dt>Dependencies</dt><dd id="detailDependencies"></dd></div><div><dt>Rollback estimate</dt><dd id="detailRollbackMinutes"></dd></div></dl>
+            <div class="procedure-grid"><article><span>Success validation</span><p id="detailValidation"></p></article><article><span>Rollback path</span><p id="detailRollback"></p></article></div>
+            <section class="preflight" aria-labelledby="preflightTitle"><div><h3 id="preflightTitle">Preflight gate</h3><span id="readinessLabel"></span></div><div class="checklist" id="checklist"><label><input type="checkbox" data-key="approval"> Approval recorded</label><label><input type="checkbox" data-key="backup"> Backup or restore point verified</label><label><input type="checkbox" data-key="communications"> Stakeholder communications prepared</label><label><input type="checkbox" data-key="monitoring"> Monitoring and stop conditions assigned</label></div><label class="notes-field"><span>Coordinator notes</span><textarea id="coordinatorNotes" rows="3" placeholder="Record handoff details or unresolved assumptions"></textarea></label></section>
+            <div class="detail-actions"><button class="plain-button bordered" id="saveReadinessButton" type="button">Save readiness</button><button class="solid-button" id="runbookButton" type="button">Download runbook</button></div>
+          </div>
+        </section>
+      </div>
+
+      <section class="risk-section" aria-labelledby="riskTitle"><div class="section-heading"><div><p class="overline">Portfolio view</p><h2 id="riskTitle">Risk distribution</h2></div><p>Likelihood × service impact</p></div><div class="risk-layout"><div class="axis y-axis"><span>5 · likely</span><span>Likelihood</span><span>1 · rare</span></div><div class="risk-matrix" id="riskMatrix" role="img" aria-label="Five by five change risk matrix"></div><div class="axis x-axis"><span>1 · minor</span><span>Service impact</span><span>5 · severe</span></div></div></section>
+    </main>
+
+    <dialog id="changeDialog" aria-labelledby="changeDialogTitle">
+      <form id="changeForm" class="dialog-content">
+        <div class="dialog-header"><div><p class="overline">Schedule analysis</p><h2 id="changeDialogTitle">Add a proposed change</h2></div><button id="closeDialogButton" type="button" aria-label="Close new change dialog">×</button></div>
+        <div class="form-grid">
+          <label class="wide"><span>Change title</span><input name="title" required maxlength="100"></label>
+          <label><span>Service</span><input name="service" required maxlength="80"></label>
+          <label><span>Owner</span><input name="owner" maxlength="80"></label>
+          <label><span>Start</span><input name="start" type="datetime-local" required></label>
+          <label><span>End</span><input name="end" type="datetime-local" required></label>
+          <label><span>Likelihood (1–5)</span><input name="likelihood" type="number" min="1" max="5" value="2" required></label>
+          <label><span>Impact (1–5)</span><input name="impact" type="number" min="1" max="5" value="3" required></label>
+          <label><span>Rollback minutes</span><input name="rollbackMinutes" type="number" min="0" value="30" required></label>
+          <label><span>Change type</span><select name="changeType"><option>application</option><option>infrastructure</option><option>database</option><option>security</option><option>retirement</option></select></label>
+          <label class="wide"><span>Dependencies (comma separated)</span><input name="dependencies" maxlength="200" placeholder="identity, vpn, database"></label>
+          <label class="wide"><span>Success validation</span><textarea name="validation" rows="2"></textarea></label>
+          <label class="wide"><span>Rollback procedure</span><textarea name="rollback" rows="2"></textarea></label>
+        </div>
+        <button class="solid-button full" type="submit">Add change and analyze</button>
+      </form>
+    </dialog>
+
+    <footer><p>Change Impact Studio is a planning demonstration. Risk scores and protected periods are transparent defaults that should be replaced with organization-approved policy.</p><a href="https://github.com/drummer475-94" target="_blank" rel="noreferrer">GitHub profile ↗</a></footer>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
