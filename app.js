@@ -2,7 +2,7 @@ import { analyzePlan, demoChanges, normalizeChange, parsePlanText, planSummary, 
 
 const storageKey = 'change-impact-studio:readiness:v1'
 const state = { changes: demoChanges.map(normalizeChange), issues: [], records: loadRecords(), selectedId: 'CHG-1042' }
-const ids = ['importButton', 'fileInput', 'exportPlanButton', 'addChangeButton', 'loadStatus', 'changeMetric', 'collisionMetric', 'riskMetric', 'readyMetric', 'scheduleBoard', 'issueCount', 'issueList', 'detailEmpty', 'detailContent', 'detailId', 'detailTitle', 'detailService', 'detailRisk', 'detailRiskBand', 'detailWindow', 'detailOwner', 'detailDependencies', 'detailRollbackMinutes', 'detailValidation', 'detailRollback', 'readinessLabel', 'checklist', 'coordinatorNotes', 'saveReadinessButton', 'runbookButton', 'riskMatrix', 'changeDialog', 'changeForm', 'closeDialogButton']
+const ids = ['importButton', 'fileInput', 'exportPlanButton', 'addChangeButton', 'demoCueButton', 'loadStatus', 'changeMetric', 'collisionMetric', 'riskMetric', 'readyMetric', 'scheduleBoard', 'issueCount', 'issueList', 'detailEmpty', 'detailContent', 'detailId', 'detailTitle', 'detailService', 'detailRisk', 'detailRiskBand', 'detailWindow', 'detailOwner', 'detailDependencies', 'detailRollbackMinutes', 'detailValidation', 'detailRollback', 'readinessLabel', 'checklist', 'coordinatorNotes', 'saveReadinessButton', 'runbookButton', 'riskMatrix', 'changeDialog', 'changeForm', 'closeDialogButton']
 const element = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]))
 
 function loadRecords() { try { return JSON.parse(localStorage.getItem(storageKey)) || {} } catch { return {} } }
@@ -160,6 +160,10 @@ element.fileInput.addEventListener('change', async () => {
   } catch (error) { element.loadStatus.textContent = error.message } finally { element.fileInput.value = '' }
 })
 element.exportPlanButton.addEventListener('click', exportPlan)
+element.demoCueButton.addEventListener('click', () => {
+  const collision = state.issues.find((issue) => issue.type === 'dependency-collision')
+  if (collision) selectChange(collision.changeIds[0])
+})
 element.addChangeButton.addEventListener('click', () => { element.changeForm.reset(); element.changeForm.elements.start.value = '2026-08-13T10:00'; element.changeForm.elements.end.value = '2026-08-13T11:00'; element.changeDialog.showModal() })
 element.closeDialogButton.addEventListener('click', () => element.changeDialog.close())
 element.changeForm.addEventListener('submit', (event) => {

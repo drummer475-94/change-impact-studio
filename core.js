@@ -6,6 +6,11 @@ function text(value, maximum) {
   return String(value || '').trim().slice(0, maximum)
 }
 
+function boundedNumber(value, minimum, maximum, fallback) {
+  const number = Number(value)
+  return Number.isFinite(number) ? Math.min(maximum, Math.max(minimum, number)) : fallback
+}
+
 export const demoChanges = [
   {
     id: 'CHG-1042', title: 'Enforce phishing-resistant MFA', service: 'Identity platform',
@@ -65,9 +70,9 @@ export function normalizeChange(change, index = 0) {
     end: text(input.end, 40),
     owner: text(input.owner, 80),
     changeType: text(input.changeType || input.type || 'standard', 40).toLowerCase(),
-    likelihood: Math.min(5, Math.max(1, Number(input.likelihood) || 1)),
-    impact: Math.min(5, Math.max(1, Number(input.impact) || 1)),
-    rollbackMinutes: Math.max(0, Number(input.rollbackMinutes) || 0),
+    likelihood: boundedNumber(input.likelihood, 1, 5, 1),
+    impact: boundedNumber(input.impact, 1, 5, 1),
+    rollbackMinutes: boundedNumber(input.rollbackMinutes, 0, 10080, 0),
     dependencies: list(input.dependencies),
     validation: text(input.validation, 2000),
     rollback: text(input.rollback, 2000),

@@ -30,4 +30,5 @@ footer { padding: 1.5rem clamp(1rem,4vw,4rem); border-top: 1px solid var(--ink);
 .source-link { font-size: .72rem; font-weight: 850; text-transform: uppercase; letter-spacing: .08em; text-decoration-thickness: 1px; text-underline-offset: .25rem; }
 .project-meta { grid-column: 2; display: flex; flex-wrap: wrap; gap: .45rem; margin: .15rem 0 0; padding: 0; list-style: none; }
 .project-meta li { border: 1px solid #b9b5a9; border-radius: 999px; padding: .35rem .55rem; color: var(--forest); font-size: .65rem; font-weight: 800; letter-spacing: .035em; }
+.demo-cue { grid-column: 2; width: fit-content; margin: 0; border: 0; background: none; padding: 0; color: var(--forest); font-size: .72rem; font-weight: 850; letter-spacing: .025em; text-decoration: underline; text-underline-offset: .22rem; }.demo-cue span { color: var(--orange); }
 @media (max-width: 780px) { .source-link { display: none; } }

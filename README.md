@@ -1,5 +1,7 @@
 # Change Impact Studio
 
+[![Tests](https://github.com/drummer475-94/change-impact-studio/actions/workflows/pages.yml/badge.svg)](https://github.com/drummer475-94/change-impact-studio/actions/workflows/pages.yml)
+
 Change Impact Studio is a static IT change-planning workspace. It models implementation windows and dependencies, calculates transparent likelihood × impact scores, detects conflicts and missing controls, tracks preflight readiness, and exports operational runbooks.
 
 **[Open the live app](https://drummer475-94.github.io/change-impact-studio/)**

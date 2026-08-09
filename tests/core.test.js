@@ -3,10 +3,11 @@ import assert from 'node:assert/strict'
 import { analyzePlan, changesOverlap, demoChanges, normalizeChange, parsePlanText, planSummary, readinessFor, riskBand, riskScore, runbookMarkdown, sharedComponents } from '../core.js'
 
 test('normalizes dependency lists and bounds risk inputs', () => {
-  const change = normalizeChange({ title: 'Test', dependencies: 'vpn, identity | dns', likelihood: 9, impact: 0 })
+  const change = normalizeChange({ title: 'Test', dependencies: 'vpn, identity | dns', likelihood: 9, impact: 0, rollbackMinutes: '1e309' })
   assert.deepEqual(change.dependencies, ['vpn', 'identity', 'dns'])
   assert.equal(change.likelihood, 5)
   assert.equal(change.impact, 1)
+  assert.equal(change.rollbackMinutes, 0)
 })
 
 test('calculates risk scores and named bands', () => {
