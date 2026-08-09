@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { analyzePlan, changesOverlap, demoChanges, normalizeChange, planSummary, readinessFor, riskBand, riskScore, runbookMarkdown, sharedComponents } from '../core.js'
+import { analyzePlan, changesOverlap, demoChanges, normalizeChange, parsePlanText, planSummary, readinessFor, riskBand, riskScore, runbookMarkdown, sharedComponents } from '../core.js'
 
 test('normalizes dependency lists and bounds risk inputs', () => {
   const change = normalizeChange({ title: 'Test', dependencies: 'vpn, identity | dns', likelihood: 9, impact: 0 })
@@ -13,6 +13,16 @@ test('calculates risk scores and named bands', () => {
   assert.equal(riskScore({ likelihood: 4, impact: 4 }), 16)
   assert.equal(riskBand(16), 'critical')
   assert.equal(riskBand(8), 'medium')
+})
+
+test('imports bounded JSON plans with stable unique identifiers', () => {
+  const changes = parsePlanText(JSON.stringify({ changes: [
+    { id: 'CHG-7', title: 'First' },
+    { id: 'CHG-7', title: 'Second' },
+  ] }))
+  assert.deepEqual(changes.map((change) => change.id), ['CHG-7', 'CHG-7-2'])
+  assert.throws(() => parsePlanText('{bad json'), /JSON array/)
+  assert.throws(() => parsePlanText(JSON.stringify(Array.from({ length: 501 }, () => ({})))), /500 changes/)
 })
 
 test('detects overlap only when windows intersect', () => {

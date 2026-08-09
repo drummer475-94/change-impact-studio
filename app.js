@@ -1,4 +1,4 @@
-import { analyzePlan, demoChanges, issueRank, normalizeChange, planSummary, readinessFor, riskBand, riskScore, runbookMarkdown } from './core.js'
+import { analyzePlan, demoChanges, normalizeChange, parsePlanText, planSummary, readinessFor, riskBand, riskScore, runbookMarkdown } from './core.js'
 
 const storageKey = 'change-impact-studio:readiness:v1'
 const state = { changes: demoChanges.map(normalizeChange), issues: [], records: loadRecords(), selectedId: 'CHG-1042' }
@@ -152,10 +152,7 @@ element.fileInput.addEventListener('change', async () => {
   if (!file) return
   if (file.size > 2 * 1024 * 1024) { element.loadStatus.textContent = 'Choose a plan smaller than 2 MB.'; return }
   try {
-    const parsed = JSON.parse(await file.text())
-    const records = Array.isArray(parsed) ? parsed : parsed.changes
-    if (!Array.isArray(records) || !records.length) throw new Error('No changes were found in this JSON plan.')
-    state.changes = records.map(normalizeChange)
+    state.changes = parsePlanText(await file.text())
     state.records = {}
     saveRecords()
     state.selectedId = state.changes[0].id
