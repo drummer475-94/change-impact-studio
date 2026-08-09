@@ -1,8 +1,8 @@
-import { analyzePlan, demoChanges, issueRank, normalizeChange, planSummary, readinessFor, riskBand, riskScore, runbookMarkdown } from './core.js'
+import { analyzePlan, demoChanges, normalizeChange, parsePlanText, planSummary, readinessFor, riskBand, riskScore, runbookMarkdown } from './core.js'
 
 const storageKey = 'change-impact-studio:readiness:v1'
 const state = { changes: demoChanges.map(normalizeChange), issues: [], records: loadRecords(), selectedId: 'CHG-1042' }
-const ids = ['importButton', 'fileInput', 'exportPlanButton', 'addChangeButton', 'loadStatus', 'changeMetric', 'collisionMetric', 'riskMetric', 'readyMetric', 'scheduleBoard', 'issueCount', 'issueList', 'detailEmpty', 'detailContent', 'detailId', 'detailTitle', 'detailService', 'detailRisk', 'detailRiskBand', 'detailWindow', 'detailOwner', 'detailDependencies', 'detailRollbackMinutes', 'detailValidation', 'detailRollback', 'readinessLabel', 'checklist', 'coordinatorNotes', 'saveReadinessButton', 'runbookButton', 'riskMatrix', 'changeDialog', 'changeForm', 'closeDialogButton']
+const ids = ['importButton', 'fileInput', 'exportPlanButton', 'addChangeButton', 'demoCueButton', 'loadStatus', 'changeMetric', 'collisionMetric', 'riskMetric', 'readyMetric', 'scheduleBoard', 'issueCount', 'issueList', 'detailEmpty', 'detailContent', 'detailId', 'detailTitle', 'detailService', 'detailRisk', 'detailRiskBand', 'detailWindow', 'detailOwner', 'detailDependencies', 'detailRollbackMinutes', 'detailValidation', 'detailRollback', 'readinessLabel', 'checklist', 'coordinatorNotes', 'saveReadinessButton', 'runbookButton', 'riskMatrix', 'changeDialog', 'changeForm', 'closeDialogButton']
 const element = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]))
 
 function loadRecords() { try { return JSON.parse(localStorage.getItem(storageKey)) || {} } catch { return {} } }
@@ -152,10 +152,7 @@ element.fileInput.addEventListener('change', async () => {
   if (!file) return
   if (file.size > 2 * 1024 * 1024) { element.loadStatus.textContent = 'Choose a plan smaller than 2 MB.'; return }
   try {
-    const parsed = JSON.parse(await file.text())
-    const records = Array.isArray(parsed) ? parsed : parsed.changes
-    if (!Array.isArray(records) || !records.length) throw new Error('No changes were found in this JSON plan.')
-    state.changes = records.map(normalizeChange)
+    state.changes = parsePlanText(await file.text())
     state.records = {}
     saveRecords()
     state.selectedId = state.changes[0].id
@@ -163,6 +160,10 @@ element.fileInput.addEventListener('change', async () => {
   } catch (error) { element.loadStatus.textContent = error.message } finally { element.fileInput.value = '' }
 })
 element.exportPlanButton.addEventListener('click', exportPlan)
+element.demoCueButton.addEventListener('click', () => {
+  const collision = state.issues.find((issue) => issue.type === 'dependency-collision')
+  if (collision) selectChange(collision.changeIds[0])
+})
 element.addChangeButton.addEventListener('click', () => { element.changeForm.reset(); element.changeForm.elements.start.value = '2026-08-13T10:00'; element.changeForm.elements.end.value = '2026-08-13T11:00'; element.changeDialog.showModal() })
 element.closeDialogButton.addEventListener('click', () => element.changeDialog.close())
 element.changeForm.addEventListener('submit', (event) => {

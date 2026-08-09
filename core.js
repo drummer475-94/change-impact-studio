@@ -1,5 +1,16 @@
 export const issueRank = { blocker: 4, high: 3, medium: 2, low: 1 }
 
+const maxImportedChanges = 500
+
+function text(value, maximum) {
+  return String(value || '').trim().slice(0, maximum)
+}
+
+function boundedNumber(value, minimum, maximum, fallback) {
+  const number = Number(value)
+  return Number.isFinite(number) ? Math.min(maximum, Math.max(minimum, number)) : fallback
+}
+
 export const demoChanges = [
   {
     id: 'CHG-1042', title: 'Enforce phishing-resistant MFA', service: 'Identity platform',
@@ -45,27 +56,52 @@ export const demoChanges = [
 ]
 
 function list(value) {
-  if (Array.isArray(value)) return value.map(String).map((item) => item.trim()).filter(Boolean)
-  return String(value || '').split(/[,;|]/).map((item) => item.trim()).filter(Boolean)
+  const items = Array.isArray(value) ? value : String(value || '').split(/[,;|]/)
+  return items.map((item) => text(item, 80)).filter(Boolean).slice(0, 30)
 }
 
 export function normalizeChange(change, index = 0) {
   const input = change && typeof change === 'object' ? change : {}
   return {
-    id: String(input.id || `CHG-${String(index + 1).padStart(4, '0')}`),
-    title: String(input.title || 'Untitled change').trim(),
-    service: String(input.service || 'Unassigned service').trim(),
-    start: String(input.start || ''),
-    end: String(input.end || ''),
-    owner: String(input.owner || '').trim(),
-    changeType: String(input.changeType || input.type || 'standard').toLowerCase(),
-    likelihood: Math.min(5, Math.max(1, Number(input.likelihood) || 1)),
-    impact: Math.min(5, Math.max(1, Number(input.impact) || 1)),
-    rollbackMinutes: Math.max(0, Number(input.rollbackMinutes) || 0),
+    id: text(input.id || `CHG-${String(index + 1).padStart(4, '0')}`, 80),
+    title: text(input.title || 'Untitled change', 100),
+    service: text(input.service || 'Unassigned service', 80),
+    start: text(input.start, 40),
+    end: text(input.end, 40),
+    owner: text(input.owner, 80),
+    changeType: text(input.changeType || input.type || 'standard', 40).toLowerCase(),
+    likelihood: boundedNumber(input.likelihood, 1, 5, 1),
+    impact: boundedNumber(input.impact, 1, 5, 1),
+    rollbackMinutes: boundedNumber(input.rollbackMinutes, 0, 10080, 0),
     dependencies: list(input.dependencies),
-    validation: String(input.validation || '').trim(),
-    rollback: String(input.rollback || '').trim(),
+    validation: text(input.validation, 2000),
+    rollback: text(input.rollback, 2000),
   }
+}
+
+function uniqueChangeIds(changes) {
+  const used = new Set()
+  return changes.map((change) => {
+    let id = change.id
+    let suffix = 2
+    while (used.has(id)) { id = `${change.id}-${suffix}`; suffix += 1 }
+    used.add(id)
+    return id === change.id ? change : { ...change, id }
+  })
+}
+
+export function parsePlanText(value) {
+  const source = String(value || '').trim()
+  if (!source) throw new Error('The selected plan is empty.')
+  let parsed
+  try { parsed = JSON.parse(source) } catch { throw new Error('Use a JSON array or an object with a changes array.') }
+  const records = Array.isArray(parsed) ? parsed : parsed?.changes
+  if (!Array.isArray(records) || !records.length) throw new Error('No changes were found in this JSON plan.')
+  if (records.length > maxImportedChanges) throw new Error(`Plans are limited to ${maxImportedChanges} changes.`)
+  if (records.some((record) => !record || typeof record !== 'object' || Array.isArray(record))) {
+    throw new Error('Every change must be a JSON object.')
+  }
+  return uniqueChangeIds(records.map(normalizeChange))
 }
 
 export function riskScore(change) { return Number(change.likelihood) * Number(change.impact) }

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#15231b">
     <meta name="description" content="A static IT change planning workspace for dependency conflicts, risk analysis, readiness, and runbook export.">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'">
     <title>Change Impact Studio | IT Change Planning</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="styles.css">
@@ -13,7 +15,7 @@
     <a class="skip-link" href="#mainContent">Skip to change plan</a>
     <header class="topbar" id="top">
       <a href="#top" class="brand"><span aria-hidden="true">C/I</span><span><strong>Change Impact Studio</strong><small>Plan the change. Protect the service.</small></span></a>
-      <nav aria-label="Page actions"><button class="plain-button" id="importButton" type="button">Import plan</button><input id="fileInput" type="file" accept=".json,application/json" aria-label="Import change plan JSON" hidden><button class="plain-button" id="exportPlanButton" type="button">Export plan</button><button class="solid-button" id="addChangeButton" type="button">New change</button></nav>
+      <nav aria-label="Page actions"><a class="source-link" href="https://github.com/drummer475-94/change-impact-studio" target="_blank" rel="noreferrer">Source code <span aria-hidden="true">↗</span></a><button class="plain-button" id="importButton" type="button">Import plan</button><input id="fileInput" type="file" accept=".json,application/json" aria-label="Import change plan JSON" hidden><button class="plain-button" id="exportPlanButton" type="button">Export plan</button><button class="solid-button" id="addChangeButton" type="button">New change</button></nav>
     </header>
 
     <main id="mainContent">
@@ -22,7 +24,7 @@
           <p class="overline">Operations planning / Week 33</p>
           <h1 id="pageTitle">See the impact before the window opens.</h1>
         </div>
-        <div class="hero-note"><span aria-hidden="true">↳</span><p>Map dependencies, find scheduling collisions, test rollback readiness, and hand the operator a usable runbook.</p><small id="loadStatus" role="status" aria-live="polite">Sample change plan loaded.</small></div>
+        <div class="hero-note"><span aria-hidden="true">↳</span><p>Map dependencies, find scheduling collisions, test rollback readiness, and hand the operator a usable runbook.</p><ul class="project-meta" aria-label="Engineering highlights"><li>Vanilla JavaScript</li><li>Zero runtime dependencies</li><li>Tested risk engine</li></ul><button class="demo-cue" id="demoCueButton" type="button">Try the demo <span>Review the VPN collision →</span></button><small id="loadStatus" role="status" aria-live="polite">Sample change plan loaded.</small></div>
       </section>
 
       <section class="metric-strip" aria-label="Change plan summary">
@@ -69,7 +71,7 @@
           <label><span>End</span><input name="end" type="datetime-local" required></label>
           <label><span>Likelihood (1–5)</span><input name="likelihood" type="number" min="1" max="5" value="2" required></label>
           <label><span>Impact (1–5)</span><input name="impact" type="number" min="1" max="5" value="3" required></label>
-          <label><span>Rollback minutes</span><input name="rollbackMinutes" type="number" min="0" value="30" required></label>
+          <label><span>Rollback minutes</span><input name="rollbackMinutes" type="number" min="0" max="10080" value="30" required></label>
           <label><span>Change type</span><select name="changeType"><option>application</option><option>infrastructure</option><option>database</option><option>security</option><option>retirement</option></select></label>
           <label class="wide"><span>Dependencies (comma separated)</span><input name="dependencies" maxlength="200" placeholder="identity, vpn, database"></label>
           <label class="wide"><span>Success validation</span><textarea name="validation" rows="2"></textarea></label>
@@ -79,7 +81,7 @@
       </form>
     </dialog>
 
-    <footer><p>Change Impact Studio is a planning demonstration. Risk scores and protected periods are transparent defaults that should be replaced with organization-approved policy.</p><a href="https://github.com/drummer475-94" target="_blank" rel="noreferrer">GitHub profile ↗</a></footer>
+    <footer><p>Change Impact Studio is a planning demonstration. Risk scores and protected periods are transparent defaults that should be replaced with organization-approved policy.</p><a href="https://github.com/drummer475-94/change-impact-studio" target="_blank" rel="noreferrer">Review the source ↗</a></footer>
     <script type="module" src="app.js"></script>
   </body>
 </html>

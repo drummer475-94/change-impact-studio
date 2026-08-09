@@ -1,6 +1,30 @@
 # Change Impact Studio
 
+[![Tests](https://github.com/drummer475-94/change-impact-studio/actions/workflows/pages.yml/badge.svg)](https://github.com/drummer475-94/change-impact-studio/actions/workflows/pages.yml)
+
 Change Impact Studio is a static IT change-planning workspace. It models implementation windows and dependencies, calculates transparent likelihood × impact scores, detects conflicts and missing controls, tracks preflight readiness, and exports operational runbooks.
+
+**[Open the live app](https://drummer475-94.github.io/change-impact-studio/)**
+
+## 60-second review
+
+1. Start with the summary strip to see collisions, high-risk changes, and approval readiness.
+2. Select the `CHG-1042` / `CHG-1043` collision to inspect the shared VPN dependency and recovery controls.
+3. Complete a preflight checklist and download the generated operator runbook.
+
+The implementation is framework-free, has no runtime dependencies, keeps imported plans in the browser, and isolates its tested analysis rules in [`core.js`](core.js).
+
+## How it works
+
+```mermaid
+flowchart LR
+  A["Sample or JSON plan"] --> B["Normalize changes"]
+  B --> C["Analyze windows, dependencies, and controls"]
+  C --> D["Calendar, issue queue, and risk matrix"]
+  D --> E["Readiness record and runbook export"]
+```
+
+CI enforces at least 95% line coverage, 95% function coverage, and 85% branch coverage for the analysis engine.
 
 ## Portfolio value
 
