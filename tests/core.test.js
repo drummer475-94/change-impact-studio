@@ -26,6 +26,13 @@ test('imports bounded JSON plans with stable unique identifiers', () => {
   assert.throws(() => parsePlanText(JSON.stringify(Array.from({ length: 501 }, () => ({})))), /500 changes/)
 })
 
+test('rejects invalid record shapes and blocks unusable windows', () => {
+  assert.throws(() => parsePlanText('[null]'), /Every change/)
+  const invalid = normalizeChange({ id: 'CHG-X', start: 'not-a-date', end: '2026-08-11T11:00:00Z' })
+  assert.equal(changesOverlap(invalid, normalizeChange(demoChanges[0])), false)
+  assert.deepEqual(analyzePlan([invalid]).map((issue) => issue.type), ['invalid-window'])
+})
+
 test('detects overlap only when windows intersect', () => {
   const [first, second, third] = demoChanges.map(normalizeChange)
   assert.equal(changesOverlap(first, second), true)

@@ -14,6 +14,18 @@ Change Impact Studio is a static IT change-planning workspace. It models impleme
 
 The implementation is framework-free, has no runtime dependencies, keeps imported plans in the browser, and isolates its tested analysis rules in [`core.js`](core.js).
 
+## How it works
+
+```mermaid
+flowchart LR
+  A["Sample or JSON plan"] --> B["Normalize changes"]
+  B --> C["Analyze windows, dependencies, and controls"]
+  C --> D["Calendar, issue queue, and risk matrix"]
+  D --> E["Readiness record and runbook export"]
+```
+
+CI enforces at least 95% line coverage, 95% function coverage, and 85% branch coverage for the analysis engine.
+
 ## Portfolio value
 
 The app demonstrates systems-analysis and IT-operations capabilities through visible product behavior: data modeling, dependency analysis, risk communication, change-control checks, rollback planning, operator handoff, and client-side state management.
