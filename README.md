@@ -8,7 +8,7 @@
 
 **[Launch the live app](https://drummer475-94.github.io/change-impact-studio/)**
 
-**Change Impact Studio** is an enterprise-grade IT change management and risk analysis workbench designed for NOC/SOC operators, change coordinators, and sysadmins. It ingests change requests from ServiceNow and Jira Service Management (CSV/JSON), detects schedule collisions, performs recovery window SLA validation, and computes automated safety scores with executable runbook exports.
+**Change Impact Studio** is a portfolio IT change-management and risk-analysis workbench modeled on NOC/SOC and sysadmin workflows. It ingests sample change requests in ServiceNow and Jira Service Management CSV/JSON shapes, detects schedule collisions, validates recovery windows, and computes transparent safety scores with runbook exports.
 
 ---
 
